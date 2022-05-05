@@ -1,0 +1,3 @@
+I'm confused about the initialization of NQueens using permutations.
+If the initialization does not have the property that every row and column contain only one Queen, 
+the method breaks down and becomes useless. What am I missing here.
