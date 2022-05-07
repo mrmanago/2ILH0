@@ -5,7 +5,6 @@ public class NQPermSol extends NQueenSol {
 
 	// TODO: needs a solution representation
 	ArrayList<Integer> rows; // permutation of the rows 
-	ArrayList<Integer> cols; // permutation of the columns
 	ArrayList<Pos> queens; // positions of all queens
 
 	// standard constructor
@@ -14,13 +13,11 @@ public class NQPermSol extends NQueenSol {
 
 		// TODO: fill in the rest of the constructor
 		rows = new ArrayList<Integer>(); // row positions
-		cols = new ArrayList<Integer>(); // row positions
 		queens = new ArrayList<Pos>(); // queen positions
 		
 		// Initialize the rows and columns to their standard values
 		for (int i = 0; i < inst.N ; i++) {
 			rows.add(i);
-			cols.add(i);
 		}
 
 		if (!random) {
@@ -60,7 +57,7 @@ public class NQPermSol extends NQueenSol {
 		
 		// TODO: must be filled in! Should return position of i^th queen
 		Pos pos = queens.get(i);
-		int x = cols.get(pos.x);
+		int x = pos.x;
 		int y = rows.get(pos.y);
 		return new Pos(x, y);
 	}
@@ -68,24 +65,18 @@ public class NQPermSol extends NQueenSol {
 	
 	// TODO: Don't forget to implement a local move (along with the undo)!
 	// Interchange the rows or columns rID1 and rID2, depending on [row].
-	public boolean applyLocalMove(int rID1, int rID2, boolean row) {
+	public boolean applyLocalMove(int rID1, int rID2) {
 		if (rID1 >= 0 && rID2 >= 0 && rID1 < N && rID2 < N) {
-			if (row) {
-				int temp = rows.get(rID1);
-				rows.set(rID1, rows.get(rID2));
-				rows.set(rID2, temp); 
-			} else {
-				int temp = cols.get(rID1);
-				cols.set(rID1, cols.get(rID2));
-				cols.set(rID2, temp); 
-			}
+			int temp = rows.get(rID1);
+			rows.set(rID1, rows.get(rID2));
+			rows.set(rID2, temp); 
 			return true;
 		}
 		else return false;
 	}
 	
 	// Undo a local move (must be executed after performing the same local move for correct behavior)
-	public void undoLocalMove(int rID1, int rID2, boolean row) {
-		applyLocalMove(rID1, rID2, row);
+	public void undoLocalMove(int rID1, int rID2) {
+		applyLocalMove(rID1, rID2);
 	}
 }
