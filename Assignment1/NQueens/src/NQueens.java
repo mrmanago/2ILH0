@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class NQueens {
 
 	public static void main(String[] args) {
-		String dataset = "8"; // choose the dataset
+		String dataset = "1000"; // choose the dataset
 		NQueenInstance inst = new NQueenInstance("data/" + dataset + ".txt"); // load the problem instance
 		//NQBasicSol sol = new NQBasicSol(inst, true); // initialize a (random) solution
 		NQPermSol sol = new NQPermSol(inst, true); // initialize a (random) solution
