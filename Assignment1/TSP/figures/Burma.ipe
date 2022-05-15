@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE ipe SYSTEM "ipe.dtd">
+<ipe version="70218" creator="Ipe 7.2.21">
+<info created="D:20210227165909" modified="D:20210227165909"/>
+<ipestyle name="custom">
+<symbol name="mark/disk(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+</path>
+</symbol>
+</ipestyle>
+<page>
+<use name="mark/disk(sx)" pos="110.82647584973158 163.03398926654685 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="110.82647584973158 87.01252236135919 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="276.608228980322 0.0 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="381.9391771019678 38.01073345259384 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="512.0 215.24150268336263 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="364.0787119856887 160.7441860465112 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="294.01073345259385 205.16636851520525 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="144.25760286225398 171.73524150268338 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="103.04114490161002 221.65295169946285 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="0.0 255.54203935599278 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="113.57423971377462 221.65295169946285 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="342.0966010733452 139.67799642218233 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="245.4669051878354 210.20393559928394 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="276.608228980322 92.05008944543786 " size="normal" stroke="black"/>
+<path stroke="black">
+0.0 255.54203935599278 m
+103.04114490161002 221.65295169946285 l
+113.57423971377462 221.65295169946285 l
+245.4669051878354 210.20393559928394 l
+294.01073345259385 205.16636851520525 l
+512.0 215.24150268336263 l
+364.0787119856887 160.7441860465112 l
+342.0966010733452 139.67799642218233 l
+381.9391771019678 38.01073345259384 l
+276.608228980322 0.0 l
+276.608228980322 92.05008944543786 l
+110.82647584973158 87.01252236135919 l
+110.82647584973158 163.03398926654685 l
+144.25760286225398 171.73524150268338 l
+h
+</path>
+</page>
+</ipe>
