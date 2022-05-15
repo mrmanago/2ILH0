@@ -22,7 +22,7 @@ public class NQPermSol extends NQueenSol {
 		// Shuffle queens so that the position is random
 		if (random) {
 			Collections.shuffle(rows);
-			Collections.shuffle(cols);
+			//Collections.shuffle(cols);
 		}
 	}
 	

@@ -74,14 +74,14 @@ public class NQueens {
 				}
 			}
 
-			// for each column swap
-			for (int i = 0; i < inst.N; i++) {
-				for (int j = 0; j < inst.N; j++) {
-					sol.applyLocalMove(i, j, 0);
-					neighbors.add(new int[]{sol.getCost(), i, j, 0});
-					sol.undoLocalMove(i, j, 0);
-				}
-			}
+//			// for each column swap. OBSOLETE. Only switch either ror OR column
+//			for (int i = 0; i < inst.N; i++) {
+//				for (int j = 0; j < inst.N; j++) {
+//					sol.applyLocalMove(i, j, 0);
+//					neighbors.add(new int[]{sol.getCost(), i, j, 0});
+//					sol.undoLocalMove(i, j, 0);
+//				}
+//			}
 
 			// find the lowest cost
 			int[] smallest = neighbors.get(0);
