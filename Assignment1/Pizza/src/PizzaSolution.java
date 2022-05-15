@@ -111,7 +111,6 @@ public class PizzaSolution {
 		swapIngredient(k);
 	}	
 	
-	
 	// compute the cost of a solution
 	public double getCost() {
 		cost = 0;
@@ -124,9 +123,18 @@ public class PizzaSolution {
 	
 	// compute the smoothed cost of a solution (you may add parameters to the function)
 	public double getSmoothCost() {
-		
-		// TODO
-		
+		cost = 0;
+		for (int j = 0; j < N; j++) {
+			if (nConflicts[j] == 0) cost += instance.prefs.get(j).getNrOrders();
+		}
+		// For every ingredient on the pizza add how many people like it to cost,
+		// and remove how many people hate it from the cost (multiplied by the persons order amount)
+		for (int k = 0; k < M; k++) {
+			if (onPizza[k]) {
+				cost += lovers.get(k).size();
+				cost -= haters.get(k).size();
+			}
+		}
 		return cost;
 	}
 	
