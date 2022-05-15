@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class NQueens {
 
 	public static void main(String[] args) {
-		String dataset = "1000"; // choose the dataset
+		String dataset = "100"; // choose the dataset
 		NQueenInstance inst = new NQueenInstance("data/" + dataset + ".txt"); // load the problem instance
 		//NQBasicSol sol = new NQBasicSol(inst, true); // initialize a (random) solution
 		NQPermSol sol = new NQPermSol(inst, true); // initialize a (random) solution
@@ -64,35 +64,23 @@ public class NQueens {
 			ArrayList<int[]> neighbors = new ArrayList<int[]>();
 
 			int currCost = sol.getCost();
+			int tempCost = currCost;
 
 			// for each row swap
 			for (int i = 0; i < inst.N; i++) {
 				for (int j = 0; j < inst.N; j++) {
-					sol.applyLocalMove(i, j, 1);
-					neighbors.add(new int[]{sol.getCost(), i, j, 1});
-					sol.undoLocalMove(i, j, 1);
+					sol.applyLocalMove(i, j);
+					if (sol.getCost() < tempCost) {
+						tempCost = sol.getCost();
+						neighbors.clear();
+						neighbors.add(new int[]{i, j});
+					}
+					sol.undoLocalMove(i, j);
 				}
 			}
 
-//			// for each column swap. OBSOLETE. Only switch either ror OR column
-//			for (int i = 0; i < inst.N; i++) {
-//				for (int j = 0; j < inst.N; j++) {
-//					sol.applyLocalMove(i, j, 0);
-//					neighbors.add(new int[]{sol.getCost(), i, j, 0});
-//					sol.undoLocalMove(i, j, 0);
-//				}
-//			}
-
-			// find the lowest cost
-			int[] smallest = neighbors.get(0);
-			for (int i = 1; i < neighbors.size(); i++) {
-				if (neighbors.get(i)[0] < smallest[0]) {
-					smallest = neighbors.get(i);
-				}
-			}
-
-			if (smallest[0] < currCost) {
-				sol.applyLocalMove(smallest[1], smallest[2], smallest[3]);
+			if (neighbors.size() >= 1) {
+				sol.applyLocalMove(neighbors.get(0)[0], neighbors.get(0)[1]);
 			} else {
 				break;
 			}

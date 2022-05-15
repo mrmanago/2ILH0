@@ -22,7 +22,6 @@ public class NQPermSol extends NQueenSol {
 		// Shuffle queens so that the position is random
 		if (random) {
 			Collections.shuffle(rows);
-			//Collections.shuffle(cols);
 		}
 	}
 	
@@ -34,16 +33,12 @@ public class NQPermSol extends NQueenSol {
 	}
 
 	// Swaps 2 selected row/columns
-	public void applyLocalMove(int rc1, int rc2, int row) {
-		if (row == 1) {
-			Collections.swap(rows, rc1, rc2);
-		} else {
-			Collections.swap(cols, rc1, rc2);
-		}
+	public void applyLocalMove(int rc1, int rc2) {
+		Collections.swap(rows, rc1, rc2);
 	}
 
 	// Undo a local move. must be executed after performing same move
-	public void undoLocalMove(int rc1, int rc2, int row) {
-		applyLocalMove(rc1, rc2, row);
+	public void undoLocalMove(int rc1, int rc2) {
+		applyLocalMove(rc1, rc2);
 	}
 }
