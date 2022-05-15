@@ -69,7 +69,7 @@ public class TSPSolution {
 			Collections.shuffle(orderOfPoints);
 		}
 
-		// perm is equal to {1, 2, 1, 1, etc}
+		// example: perm is equal to {1, 2, 1, 1, etc}
 		tour.add(orderOfPoints.get(0));
 		tour.add(orderOfPoints.get(1));
 		makeSubTour(tour);
