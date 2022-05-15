@@ -10,11 +10,14 @@ public class TSPSolution {
 	TSPInstance instance; // instance
 	ArrayList<Integer> perm; // solution representation (perm[i] is i-th point in tour)
 	int N; // a shorthand for the number of points
+
+	boolean random; // if the solution is calculated at random or not
 	
 	// constructor
 	public TSPSolution(TSPInstance inst, boolean random) {
 		instance = inst;
 		N = instance.N;
+		this.random = random;
 		
 		// initialize with the standard order
 		perm = new ArrayList<Integer>();
@@ -32,8 +35,7 @@ public class TSPSolution {
 		}
 		
 	}
-	
-	
+
 	
 	// copy the solution (if you want to keep track of the best solution found)
 	public TSPSolution copy() {
@@ -48,18 +50,74 @@ public class TSPSolution {
 	
 	// greedy algorithm that starts forming a tour with two random points and repeatedly inserts a random point in the best possible place in the tour
 	public void computeGreedy() {
-		
-		// TODO
-		
+
+		// pick 2 random points. make a tour.
+		// for remaining points
+		//	pick random point
+		//	for each possible place to put in tour
+		//  	calc cost to put in tour
+		// 	insert point where lowest cost
+
+		ArrayList<Integer> tour = new ArrayList<Integer>();
+
+		// Random order of points to be inserted set
+		ArrayList<Integer> orderOfPoints = new ArrayList<Integer>();
+		for (int i = 0; i < N; i++) {
+			orderOfPoints.add(i);
+		}
+		if (random) {
+			Collections.shuffle(orderOfPoints);
+		}
+
+		// example: perm is equal to {1, 2, 1, 1, etc}
+		tour.add(orderOfPoints.get(0));
+		tour.add(orderOfPoints.get(1));
+		makeSubTour(tour);
+
+		// for each remaining point
+		for (int i = 2; i < N; i++) {
+			ArrayList<double[]> positionCost = new ArrayList<>();
+			// for each possible insert. tour size + 1
+			for (int j = 0; j <= tour.size(); j++) {
+				tour.add(j, orderOfPoints.get(i));
+				makeSubTour(tour);
+				positionCost.add(new double[]{getCost(), (double) j});
+				tour.remove(j);
+			}
+
+			// Find where best to insert the point
+			double[] smallest = positionCost.get(0);
+			for (int j = 1; j < positionCost.size(); j++) {
+				if (positionCost.get(j)[0] < smallest[0]) {
+					smallest = positionCost.get(j);
+				}
+			}
+
+			// Insert best point
+			tour.add((int) smallest[1], orderOfPoints.get(i));
+			makeSubTour(tour);
+		}
 	}
-	
+
+	// changes perm variable to smaller tour for greedy solution so cost can be calculated
+	public void makeSubTour(ArrayList<Integer> tour) {
+		for (int i = 0; i < N; i++) {
+			if (i < tour.size()) {
+				perm.set(i, tour.get(i));
+			} else {
+				perm.set(i, tour.get(0));
+			}
+		}
+	}
 	
 	
 	// performs 2-opt move on i-th and j-th edge in tour
 	public void apply2OPT(int i, int j) {
-		
-		// TODO
-		
+		// flip perm order from i-j
+		int k = Math.abs(i-j);
+		for (int v = 0; v < k/2; v++) {
+			applySwap(v, k-v);
+		}
 	}
 	
 	public void undo2OPT(int i, int j) {

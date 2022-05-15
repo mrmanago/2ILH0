@@ -1,26 +1,49 @@
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 public class NQPermSol extends NQueenSol {
 
-	// TODO: needs a solution representation
+	ArrayList<Integer> rows;
+	ArrayList<Integer> cols;
 
 	// standard constructor
 	public NQPermSol(NQueenInstance inst, boolean random) {
 		super(inst);
 
-		// TODO: fill in the rest of the constructor
+		rows = new ArrayList<Integer>();
+		cols = new ArrayList<Integer>();
+
+		// Place queens on a diagonal so that there is 1 for each column and row
+		for (int i = 0; i < N; i++) {
+			rows.add(i);
+			cols.add(i);
+		}
+
+		// Shuffle queens so that the position is random
+		if (random) {
+			Collections.shuffle(rows);
+			//Collections.shuffle(cols);
+		}
 	}
 	
 	
 	
 	// get the position of a queen
 	public Pos getPosition(int i) {
-		
-		// TODO: must be filled in! Should return position of i^th queen
-		
-		return null;
+		return new Pos(rows.get(i),cols.get(i));
 	}
-	
-	
-	// TODO: Don't forget to implement a local move (along with the undo)!
-	
+
+	// Swaps 2 selected row/columns
+	public void applyLocalMove(int rc1, int rc2, int row) {
+		if (row == 1) {
+			Collections.swap(rows, rc1, rc2);
+		} else {
+			Collections.swap(cols, rc1, rc2);
+		}
+	}
+
+	// Undo a local move. must be executed after performing same move
+	public void undoLocalMove(int rc1, int rc2, int row) {
+		applyLocalMove(rc1, rc2, row);
+	}
 }
