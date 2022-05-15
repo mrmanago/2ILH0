@@ -11,11 +11,11 @@ import java.util.TreeSet;
 public class Pizza {
 
 	public static void main(String[] args) {
-		String dataset = "medium"; // choose the dataset
+		String dataset = "difficult"; // choose the dataset
 		PizzaInstance inst = new PizzaInstance("data/" + dataset + ".txt"); // load the problem instance
 		PizzaSolution sol = new PizzaSolution(inst, false); // initialize a (random) solution
-		//randomIterativeImprovement(inst, sol, 100000); // perform iterative improvement
-		sol = tabuSearch(inst, sol, 100); // perform tabu search
+		randomIterativeImprovement(inst, sol, 100000); // perform iterative improvement
+		//sol = tabuSearch(inst, sol, 100); // perform tabu search
 		//simAnnealing(inst, sol, 1000000); // perform simulated annealing
 		//bestSimAnnealing(inst, sol, 1000000); // perform improved simulated annealing
 		System.out.println("Cost = " + sol.getCost()); // output the cost
@@ -23,9 +23,7 @@ public class Pizza {
 		sol.visualize("figures/" + dataset + ".png", true); // visualize the solution
 	}
 
-	
-	
-	
+
 	// perform random iterative improvement for [nIter] iterations (solution will be changed!)
 	public static void randomIterativeImprovement(PizzaInstance inst, PizzaSolution sol, int nIter) {
 		
@@ -119,28 +117,78 @@ public class Pizza {
 		return bestSol;
 	}
 
-	
-	
-	
-	
 	// perform simulated annealing, where [nIter] is the number of iterations
 	// you may add more parameters if you wish (e.g. temperature settings, etc.)
 	public static void simAnnealing(PizzaInstance inst, PizzaSolution sol, int nIter) {
-		
-		// TODO
-		
+		Random rand = new Random();
+
+		double initTemp = 1000;
+		double finalTemp = 0.1;
+		double alpha = Math.pow((finalTemp / initTemp), (1.0 / nIter));
+
+		double currentTemp = initTemp;
+
+		while (currentTemp > finalTemp) {
+			double x = sol.getCost();
+
+			// Apply random move
+			int a = rand.nextInt(inst.M);
+			sol.swapIngredient(a);
+			double costDiff = x - sol.getCost();
+
+			int u = rand.nextInt(2);
+
+			if (u >= Math.min(1, Math.exp(-costDiff / currentTemp ))) {
+				sol.undoSwapIngredient(a);
+			}
+
+			currentTemp = currentTemp * alpha;
+		}
 	}
-	
-	
-	
+
+
+
 	// perform improved (!) simulated annealing, where [nIter] is the number of iterations
 	// you may add more parameters if you wish (e.g. temperature settings, etc.)
 	public static void bestSimAnnealing(PizzaInstance inst, PizzaSolution sol, int nIter) {
-		
-		// TODO
-		
+		Random rand = new Random();
+
+		double avgCost = 0.0;
+		for (int i = 0; i < 100; i++) {
+			int q = rand.nextInt(inst.M);
+			sol.swapIngredient(q);
+			avgCost = sol.getSmoothCost();
+			sol.undoSwapIngredient(q);
+		}
+		avgCost = avgCost / 100.0;
+
+		double initTemp = (-1.0 * avgCost) / Math.log(0.5);
+		double finalTemp = (-1.0 * avgCost / Math.log(Math.pow(10, -3)));
+		double alpha = Math.pow((finalTemp / initTemp), (1.0 / nIter));
+
+//		System.out.println(avgCost);
+//		System.out.println(initTemp);
+//		System.out.println(finalTemp);
+
+		double currentTemp = initTemp;
+
+		while (currentTemp > finalTemp) {
+			double x = sol.getSmoothCost();
+
+			// Apply random move
+			int a = rand.nextInt(inst.M);
+			sol.swapIngredient(a);
+			double costDiff = x - sol.getSmoothCost();
+
+			int u = rand.nextInt(2);
+
+			if (costDiff > 0) {
+				if (u >= Math.min(1, Math.exp(-costDiff / currentTemp ))) {
+					sol.undoSwapIngredient(a);
+				}
+			}
+
+			currentTemp = currentTemp * alpha;
+		}
 	}
-	
-	
-	
 }
