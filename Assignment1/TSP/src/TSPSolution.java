@@ -113,9 +113,11 @@ public class TSPSolution {
 	
 	// performs 2-opt move on i-th and j-th edge in tour
 	public void apply2OPT(int i, int j) {
-		
-		// TODO
-		
+		// flip perm order from i-j
+		int k = Math.abs(i-j);
+		for (int v = 0; v < k/2; v++) {
+			applySwap(v, k-v);
+		}
 	}
 	
 	public void undo2OPT(int i, int j) {
