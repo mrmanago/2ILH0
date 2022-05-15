@@ -59,10 +59,11 @@ public class Pizza {
 		PizzaSolution bestSol = sol.copy();
 		ArrayList<PizzaSolution> solList = new ArrayList<>();
 		double curCost = sol.getSmoothCost();
+		double bestCost = sol.getCost();
 		int[] tabuList = new int[inst.M];
-		int tabuTime = 0;
+		int tabuTime = 5;
 
-		// try all local moves
+		// Improve solution iteratively
 		for (int k = 1; k < nIter; k++) {
 			// Print the process of the solver
 			if (k % 100 == 0) {
@@ -75,13 +76,22 @@ public class Pizza {
 			for (int s = 0; s < inst.M; s++) {
 				// Only allow the move if its not tabu
 				if (tabuList[s] < k) {
+					// Execute local move
 					sol.swapIngredient(s);
+					// Get cost of new solution
 					double newCost = sol.getSmoothCost();
+					// If new solution is better than best
+					if (sol.getCost() > bestCost) {
+						System.out.println("Found better cost " + sol.getCost());
+						bestSol = sol.copy();
+						bestCost = sol.getCost();
+					}
+					// If new solution is better than current
 					if (newCost > curCost) {
 						curCost = newCost;
 						// Empty the solList because there is no tie anymore
 						solList.clear();
-						// Add tied solutions to the solList
+						// Add solution to the solList
 						solList.add(sol.copy());
 						// Put the swap on the tabu list
 						tabuList[s] = k + tabuTime;
@@ -91,20 +101,17 @@ public class Pizza {
 						// Put the swap on the tabu list
 						tabuList[s] = k + tabuTime;
 					}
-
 					// Undo the local move
 					sol.swapIngredient(s);
 				}
 			}
-			// Use a random solution from the solution list as the new solution
+			// If no better solution was found take a random next step (including possible tabu move)
 			if (solList.size() <= 0) {
 				// There was no better local solution found
-				break;
+				sol.swapIngredient(rand.nextInt(inst.M));
+			} else {
+				sol = solList.get(rand.nextInt(solList.size()));
 			}
-			System.out.println(solList.size());
-			bestSol = solList.get(rand.nextInt(solList.size()));
-			System.out.println("Cost " + bestSol.getCost());
-			System.out.println("Smooth Cost " + bestSol.getSmoothCost());
 		}
 		return bestSol;
 	}

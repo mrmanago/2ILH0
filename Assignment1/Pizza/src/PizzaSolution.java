@@ -68,6 +68,9 @@ public class PizzaSolution {
 	// copy the solution (if you want to keep track of the best solution found)
 	public PizzaSolution copy() {
 		PizzaSolution sol = new PizzaSolution(instance, false);
+		for (int i = 0; i < N; i++) {
+			sol.nConflicts[i] = nConflicts[i];
+		}
 		for (int i = 0; i < M; i++) {
 			sol.onPizza[i] = onPizza[i];
 		}
@@ -120,19 +123,22 @@ public class PizzaSolution {
 		return cost;
 	}
 	
-	
 	// compute the smoothed cost of a solution (you may add parameters to the function)
 	public double getSmoothCost() {
 		cost = 0;
 		for (int j = 0; j < N; j++) {
 			if (nConflicts[j] == 0) cost += instance.prefs.get(j).getNrOrders();
 		}
-		// For every ingredient on the pizza add how many people like it to cost,
-		// and remove how many people hate it from the cost (multiplied by the persons order amount)
-		for (int k = 0; k < M; k++) {
-			if (onPizza[k]) {
-				cost += lovers.get(k).size();
-				cost -= haters.get(k).size();
+
+		// combine number of love and hate for an ingredient and add them together
+		// for each ingredient
+		for (int i = 0; i < M; i++) {
+			if (onPizza[i]) {
+				// for each person
+				for (int j = 0; j < N; j++) {
+					double r = instance.prefs.get(j).feelsAboutIngr(i) * 0.02;
+					cost = cost + (r  * instance.prefs.get(j).getNrOrders());
+				}
 			}
 		}
 		return cost;
