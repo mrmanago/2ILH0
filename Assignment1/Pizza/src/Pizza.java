@@ -58,6 +58,7 @@ public class Pizza {
 		Random rand = new Random();
 		PizzaSolution bestSol = sol.copy();
 		ArrayList<PizzaSolution> solList = new ArrayList<>();
+		ArrayList<Integer> moveList = new ArrayList<>();
 		double curCost = sol.getSmoothCost();
 		double bestCost = sol.getCost();
 		int[] tabuList = new int[inst.M];
@@ -68,13 +69,13 @@ public class Pizza {
 			// Print the process of the solver
 			if (k % 100 == 0) {
 				System.out.println("Completed: " + (float) k/nIter);
-				System.out.println("Best sol so far: " + bestSol.getSmoothCost());
+				System.out.println("Best sol so far: " + bestSol.getCost());
 			}
 			// Clear the solList
 			solList.clear();
 			// Find the best local move by going through all of them
 			for (int s = 0; s < inst.M; s++) {
-				// Only allow the move if its not tabu
+				// Only consider the move if its not on the tabu list
 				if (tabuList[s] < k) {
 					// Execute local move
 					sol.swapIngredient(s);
@@ -91,15 +92,14 @@ public class Pizza {
 						curCost = newCost;
 						// Empty the solList because there is no tie anymore
 						solList.clear();
-						// Add solution to the solList
+						moveList.clear();
+						// Add solution to the solList and move to moveList
 						solList.add(sol.copy());
-						// Put the swap on the tabu list
-						tabuList[s] = k + tabuTime;
+						moveList.add(s);
 					} else if (newCost == curCost) {	
-						// Add tied solutions to the solList
+						// Add tied solutions to the solList and move to moveList
 						solList.add(sol.copy());
-						// Put the swap on the tabu list
-						tabuList[s] = k + tabuTime;
+						moveList.add(s);
 					}
 					// Undo the local move
 					sol.swapIngredient(s);
@@ -110,7 +110,10 @@ public class Pizza {
 				// There was no better local solution found
 				sol.swapIngredient(rand.nextInt(inst.M));
 			} else {
-				sol = solList.get(rand.nextInt(solList.size()));
+				// Use a random best solution as the new solution and add the used move to the tabu list
+				int randomIndex = rand.nextInt(solList.size());
+				sol = solList.get(randomIndex);
+				tabuList[moveList.get(randomIndex)] = k + tabuTime;
 			}
 		}
 		return bestSol;
