@@ -18,6 +18,7 @@ public class PizzaInstance {
 		int n = 0, m = 0;
 		ArrayList<PizzaPref> preferences = new ArrayList<PizzaPref>();
 		
+		System.out.println(filename);
 		File file = new File(filename);
 		try {
 			Scanner scan = new Scanner(file);

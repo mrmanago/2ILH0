@@ -4,17 +4,18 @@ public class Pizza {
 
 	public static void main(String[] args) {
 		String dataset = "small"; // choose the dataset
-		PizzaInstance inst = new PizzaInstance("data/" + dataset + ".txt"); // load the problem instance
+		String dir = System.getProperty("user.dir") + "/Pizza/";
+		PizzaInstance inst = new PizzaInstance(dir + "data/" + dataset + ".txt"); // load the problem instance
 		PizzaSolution sol = new PizzaSolution(inst, true); // initialize a (random) solution
-		//sol.computeGreedy(); // run the original greedy algorithm
+		sol.computeGreedy(); // run the original greedy algorithm
 		//AntColonyOpt ants = new AntColonyOpt(inst.N, ..., ..., ..., ..., ...); // make object for Ant Colony Optimization
 		//sol.computeGreedy(ants); // run the ant colony greedy algorithm
 		//PizzaSolution sol = antColony(inst, ..., ..., ants); // perform ant colony optimization
 		//PizzaSolution sol = antColonyRank(inst, ..., ..., ants); // perform ant colony optimization with rank-based pheromone depositing
 		//PizzaSolution sol = geneticAlg(inst, ..., ..., ...); // perform the genetic algorithm
 		System.out.println("Cost = " + sol.getCost()); // output the cost
-		sol.output("output/" + dataset + ".out"); // output the solution
-		sol.visualize("figures/" + dataset + ".png", true); // visualize the solution
+		sol.output(dir + "output/" + dataset + ".out"); // output the solution
+		sol.visualize(dir + "figures/" + dataset + ".png", true); // visualize the solution
 	}
 
 	

@@ -81,11 +81,10 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
     public void computeGreedy() {
     	
     	// TODO: Extend this algorithm
-    	
     	int[][] ingrVotes = new int[M][2]; // how many customers (weighed by nr of orders) like (second index 0) or hate (second index 1) the ingredient
     	for (int i = 0; i < M; i++) {
     		for (Integer k: instance.lovers.get(i)) ingrVotes[i][0] += instance.prefs.get(k).nOrder;
-    		for (Integer k: instance.haters.get(i)) ingrVotes[i][1] += instance.prefs.get(k).nOrder;
+			for (Integer k: instance.haters.get(i)) ingrVotes[i][1] += instance.prefs.get(k).nOrder;
     	}
     	
     	boolean[] eliminated = new boolean[N]; // keep track of which customers have already been "eliminated"
@@ -96,27 +95,44 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
     	
     	// main loop of greedy algorithm
     	while (remIngrs.size() > 0) {
-    		
-    		// TODO: Replace best choice by random choice via roulette wheel selection
-    		
-    		// determine best choice
-    		int ingr = 0;
-    		boolean val = true;
-    		int mostVotes = -1;
-    		
-    		for (Integer k: remIngrs) {
-    			if (ingrVotes[k][0] > mostVotes) {
-    				mostVotes = ingrVotes[k][0];
-    				ingr = k; val = true;
-    			}
-    			if (ingrVotes[k][1] > mostVotes) {
-    				mostVotes = ingrVotes[k][1];
-    				ingr = k; val = false;
-    			}    			
-    		}
-    		
-    		if (mostVotes <= 0) break; // stop if the remaining customers don't care about the remaining ingredients		
-    		
+			// variable that keeps count of total order amount (used in roulette wheel selection)
+			int ord_count = 0;
+
+			// compute the total amount of orders
+			for (Integer i: remIngrs) {
+				ord_count += ingrVotes[i][0];
+				ord_count += ingrVotes[i][1];
+			}
+
+			if (!(ord_count > 0)) break; // stop if the remaining customers don't care about the remaining ingredients	
+
+			// run roulette wheel using loaded die approach
+			int ingr = 0;
+			boolean val = true;
+
+			// probability mass that is left
+			double mass = 1;
+			for (Integer i: remIngrs) {
+				// probability of choosing to add i
+				double prob1 = ((double) ingrVotes[i][0] / (double) ord_count);
+				if (Math.random() < (prob1 / mass)) {
+					ingr = i;
+					val = true;
+					break;
+				}
+				// update the mass after flipping the biased coin
+				mass = mass - prob1;
+				// probability of choosing to remove i
+				double prob2 = ((double) ingrVotes[i][1] / (double) ord_count);
+				if (Math.random() < (prob2 / mass)) {
+					ingr = i;
+					val = true;
+					break;
+				}
+				// update the mass after flipping the biased coin
+				mass = mass - prob2;
+			}
+
     		onPizza[ingr] = val; // set value according to greedy choice
     		remIngrs.remove(ingr); // remove ingredient from set	
     		
@@ -130,7 +146,6 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
     	}
     	
     	recomputeConflicts(); // recompute the conflicts
-    	
     }
     
     

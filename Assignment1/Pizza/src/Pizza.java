@@ -14,7 +14,7 @@ public class Pizza {
 		String dataset = "difficult"; // choose the dataset
 		PizzaInstance inst = new PizzaInstance("data/" + dataset + ".txt"); // load the problem instance
 		PizzaSolution sol = new PizzaSolution(inst, false); // initialize a (random) solution
-		randomIterativeImprovement(inst, sol, 100000); // perform iterative improvement
+		randomIterativeImprovement(inst, sol, 100); // perform iterative improvement
 		//sol = tabuSearch(inst, sol, 100); // perform tabu search
 		//simAnnealing(inst, sol, 1000000); // perform simulated annealing
 		//bestSimAnnealing(inst, sol, 1000000); // perform improved simulated annealing
