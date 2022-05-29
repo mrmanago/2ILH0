@@ -79,8 +79,6 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
     
     // greedy algorithm that iteratively picks the most popular choice for an ingredient
     public void computeGreedy() {
-    	
-    	// TODO: Extend this algorithm
     	int[][] ingrVotes = new int[M][2]; // how many customers (weighed by nr of orders) like (second index 0) or hate (second index 1) the ingredient
     	for (int i = 0; i < M; i++) {
     		for (Integer k: instance.lovers.get(i)) ingrVotes[i][0] += instance.prefs.get(k).nOrder;
@@ -153,8 +151,84 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
     // greedy algorithm for ant colony optimization
     public void computeGreedy(AntColonyOpt ants) {
     	
-    	// TODO
+    	int[][] ingrVotes = new int[M][2]; // how many customers (weighed by nr of orders) like (second index 0) or hate (second index 1) the ingredient
+    	for (int i = 0; i < M; i++) {
+    		for (Integer k: instance.lovers.get(i)) ingrVotes[i][0] += instance.prefs.get(k).nOrder;
+			for (Integer k: instance.haters.get(i)) ingrVotes[i][1] += instance.prefs.get(k).nOrder;
+    	}
+
+    	boolean[] eliminated = new boolean[N]; // keep track of which customers have already been "eliminated"
+    	TreeSet<Integer> remIngrs = new TreeSet<Integer>(); // the set of ingredients for which we have not made a decision yet
+    	for (int i = 0; i < M; i++) remIngrs.add(i);
+    	for (int i = 0; i < M; i++) onPizza[i] = false; // reset to empty pizza
     	
+    	// main loop of greedy algorithm
+    	while (remIngrs.size() > 0) {
+			// variable that keeps count of total order amount (used in roulette wheel selection)
+			double totalPreference = 0;
+
+			// variable that is used in computing the visibility
+			int ord_count = 0;
+			// compute the total amount of orders
+			for (Integer i: remIngrs) {
+				ord_count += ingrVotes[i][0];
+				ord_count += ingrVotes[i][1];
+			}
+
+			// compute the preferences
+			for (Integer i: remIngrs) {
+				double removeVisibility = (((double) ingrVotes[i][0]) / (double) ord_count);
+				double addVisibility = (((double) ingrVotes[i][1]) / (double) ord_count);
+				totalPreference += ants.getPreference(i, 0, removeVisibility);
+				totalPreference += ants.getPreference(i, 1, addVisibility);
+			}
+
+			if (!(ord_count > 0)) break; // stop if the remaining customers don't care about the remaining ingredients	
+
+			// run roulette wheel using loaded die approach
+			int ingr = 0;
+			boolean val = true;
+
+			// probability mass that is left
+			double mass = 1;
+			for (Integer i: remIngrs) {
+				double removeVisibility = (((double) ingrVotes[i][0]) / (double) ord_count);
+				double removePreference = ants.getPreference(i, 0, removeVisibility);
+				double addVisibility = (((double) ingrVotes[i][1]) / (double) ord_count);
+				double addPreference = ants.getPreference(i, 1, addVisibility);
+				// probability of choosing to add i as a ratio of preferences
+				double prob1 = addPreference / totalPreference;
+				if (Math.random() < (prob1 / mass)) {
+					ingr = i;
+					val = true;
+					break;
+				}
+				// update the mass after flipping the biased coin
+				mass = mass - prob1;
+				// probability of choosing to remove i as a ratio of preferences
+				double prob2 = removePreference / totalPreference;
+				if (Math.random() < (prob2 / mass)) {
+					ingr = i;
+					val = true;
+					break;
+				}
+				// update the mass after flipping the biased coin
+				mass = mass - prob2;
+			}
+
+    		onPizza[ingr] = val; // set value according to greedy choice
+    		remIngrs.remove(ingr); // remove ingredient from set	
+    		
+			for (Integer k: (val ? instance.haters.get(ingr) : instance.lovers.get(ingr))) { // eliminate all customers that hate/love ingredient and update ingredient counts
+				if (eliminated[k]) continue;
+				eliminated[k] = true;
+				for (Integer x: instance.prefs.get(k).likes) ingrVotes[x][0] -= instance.prefs.get(k).nOrder;
+				for (Integer x: instance.prefs.get(k).hates) ingrVotes[x][1] -= instance.prefs.get(k).nOrder;
+			}    		
+
+    	}
+    	
+    	recomputeConflicts(); // recompute the conflicts
     }
     
     
