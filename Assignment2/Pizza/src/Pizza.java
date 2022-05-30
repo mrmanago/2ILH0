@@ -1,29 +1,88 @@
 import java.util.Random;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+final class solutionRep {
+	final double cost;
+	final String params;
+
+	solutionRep(double cost, String params) {
+		this.cost = cost;
+		this.params = params;
+	}
+}
+
+final class solutionRepComparator implements Comparator<solutionRep> {
+    @Override
+    public int compare(solutionRep rep1, solutionRep rep2) {
+		if (rep1.cost < rep2.cost) {
+			return -1;
+		} else if (rep1.cost == rep2.cost) {
+			return 0;
+		} else {
+			return 1;
+		}
+    }
+}
 
 public class Pizza {
 
+	// Local variables to save results and parameters
+	static ArrayList<solutionRep> sols = new ArrayList<>();
+	static Random random = new Random();
+
 	public static void main(String[] args) {
 		String dataset = "small"; // choose the dataset
-		String dir = System.getProperty("user.dir") + "/Pizza/";
+		String dir = System.getProperty("user.dir") + "/Assignment2/Pizza/";
+		//System.out.println("Directory: " + dir);
 		PizzaInstance inst = new PizzaInstance(dir + "data/" + dataset + ".txt"); // load the problem instance
 		//PizzaSolution sol = new PizzaSolution(inst, true); // initialize a (random) solution
 		//sol.computeGreedy(); // run the original greedy algorithm
-		AntColonyOpt ants = new AntColonyOpt(inst.M, 1, 1, 0.5, 3/4, 1); // make object for Ant Colony Optimization
+		//AntColonyOpt ants = new AntColonyOpt(inst.M, 1, 1, 0.5, 0.75, 0.1); // make object for Ant Colony Optimization
 		//sol.computeGreedy(ants); // run the ant colony greedy algorithm
-		PizzaSolution sol = antColony(inst, 5, 1000, ants); // perform ant colony optimization
+		//PizzaSolution sol = antColony(inst, 5, 1000, ants); // perform ant colony optimization
+		tuneParameters(inst, 1000);
 		//PizzaSolution sol = antColonyRank(inst, ..., ..., ants); // perform ant colony optimization with rank-based pheromone depositing
 		//PizzaSolution sol = geneticAlg(inst, ..., ..., ...); // perform the genetic algorithm
-		System.out.println("Cost = " + sol.getCost()); // output the cost
-		sol.output(dir + "output/" + dataset + ".out"); // output the solution
-		sol.visualize(dir + "figures/" + dataset + ".png", true); // visualize the solution
+		//System.out.println("Cost = " + sol.getCost()); // output the cost
+		//sol.output(dir + "output/" + dataset + ".out"); // output the solution
+		//sol.visualize(dir + "figures/" + dataset + ".png", true); // visualize the solution
 	}
 
-	
+	// Tune parameters by trying many configurations
+	public static void tuneParameters(PizzaInstance inst, int iterations) {
+		// Options for parameters
+		int[] ants = {5, 10, 15, 20, 25};
+		double[] alphas = {0.1, 0.3, 0.5, 1, 1.5, 2};
+		double[] betas = {0.1, 0.3, 0.5, 1, 1.5, 2};
+		double[] qs = {0.5, 1, 2, 3, 4};
+		double[] rhos = {0.2, 0.4, 0.5, 0.6, 0.8, 0.9};
+		// Run random settings
+		for(int i=0; i<iterations; i++) {
+			AntColonyOpt colony = new AntColonyOpt(
+				inst.M, alphas[random.nextInt(alphas.length)], 
+				betas[random.nextInt(betas.length)], 
+				qs[random.nextInt(qs.length)], 
+				rhos[random.nextInt(rhos.length)], 
+				0.1
+				);
+			int antAmount = ants[random.nextInt(ants.length)];
+			PizzaSolution sol = antColony(inst, antAmount, 10, colony);
+			sols.add(new solutionRep(sol.getCost(), "ants: " + antAmount + " alpha: " + colony.alpha +
+				" beta: " + colony.beta + " Q: " + colony.Q + " rho: " + colony.rho));			
+		}
+		Collections.sort(sols, new solutionRepComparator());
+		// Print n best solutions
+		int n = 20;
+		for (int i=0; i<n; i++) {
+			System.out.println("Cost: " + sols.get(iterations-i-1).cost + ", using: " + sols.get(i).params);
+		}
+	} 
 	
 	
 	// perform ant colony optimization with [nAnts] ants and [nIter] iterations/rounds
 	public static PizzaSolution antColony(PizzaInstance inst, int nAnts, int nIter, AntColonyOpt antOpt) {
-		
 		PizzaSolution bestSol = new PizzaSolution(inst, true);
 		double bestCost = bestSol.getCost();
 		
@@ -56,15 +115,15 @@ public class Pizza {
 					bestCost = ants[s].getCost();
 					bestSol = ants[s].copy();
 					// Print that solution has been improved
-					System.out.println("Solution improved to: " + bestCost);
+					// System.out.println("Solution improved to: " + bestCost);
 				}
 
 				// For every ingredient update the pheromone levels of the choice that was made in the solution
 				for (int i=0; i<inst.M; i++) {
 					if (ants[s].onPizza[i]) {
-						antOpt.addPheromone(i, 1, antOpt.Q / ants[s].getNrOnPizza());
+						antOpt.addPheromone(i, 1, (ants[s].getCost() / bestCost)*(antOpt.Q / ants[s].getNrOnPizza()));
 					} else {
-						antOpt.addPheromone(i, 0, antOpt.Q / ants[s].getNrOnPizza());
+						antOpt.addPheromone(i, 0, (ants[s].getCost() / bestCost)*(antOpt.Q / ants[s].getNrOnPizza()));
 					}
 				}
 			}
