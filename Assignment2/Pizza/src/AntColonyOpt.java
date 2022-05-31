@@ -1,4 +1,3 @@
-
 public class AntColonyOpt {
 	
 	double[][] pher; // current pheromones -- first index is ingredient, second index is 0 (add ingredient) or 1 (exclude ingredient)
@@ -26,6 +25,7 @@ public class AntColonyOpt {
 	// initalize a round (iteration) of the ant colony optimization algorithm
 	public void initRound() {
 		// TODO
+
 	}
 	
 	

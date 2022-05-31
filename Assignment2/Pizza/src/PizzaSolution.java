@@ -18,9 +18,16 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
 	public static PizzaSolution crossover(PizzaSolution sol1, PizzaSolution sol2) {
 		PizzaSolution sol = new PizzaSolution(sol1.instance, false);
 		
-		// TODO
-		
-		//sol.recomputeConflicts(); Fix the nConflicts array, if necessary
+		// Method 1: Swap random amount of ingredients
+		Random random = new Random();
+		int ingrAmount = random.nextInt(sol1.M);
+		// Randomly copy ingredient choices from sol2 to sol1
+		for (int i=0; i<ingrAmount; i++) {
+			int ingrIndex = random.nextInt(sol1.instance.M);
+			sol1.onPizza[ingrIndex] = sol2.onPizza[ingrIndex];
+		}
+
+		sol.recomputeConflicts(); //Fix the nConflicts array, if necessary
 		
 		return sol;
 	}
@@ -111,10 +118,10 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
 			// probability mass that is left
 			double mass = 1;
 			for (Integer i: remIngrs) {
+				ingr = i;
 				// probability of choosing to add i
 				double prob1 = ((double) ingrVotes[i][0] / (double) ord_count);
 				if (Math.random() < (prob1 / mass)) {
-					ingr = i;
 					val = true;
 					break;
 				}
@@ -123,8 +130,7 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
 				// probability of choosing to remove i
 				double prob2 = ((double) ingrVotes[i][1] / (double) ord_count);
 				if (Math.random() < (prob2 / mass)) {
-					ingr = i;
-					val = true;
+					val = false;
 					break;
 				}
 				// update the mass after flipping the biased coin
@@ -150,7 +156,6 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
     
     // greedy algorithm for ant colony optimization
     public void computeGreedy(AntColonyOpt ants) {
-    	
     	int[][] ingrVotes = new int[M][2]; // how many customers (weighed by nr of orders) like (second index 0) or hate (second index 1) the ingredient
     	for (int i = 0; i < M; i++) {
     		for (Integer k: instance.lovers.get(i)) ingrVotes[i][0] += instance.prefs.get(k).nOrder;
@@ -164,24 +169,28 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
     	
     	// main loop of greedy algorithm
     	while (remIngrs.size() > 0) {
-			// variable that keeps count of total order amount (used in roulette wheel selection)
-			double totalPreference = 0;
-
 			// variable that is used in computing the visibility
 			int ord_count = 0;
+
 			// compute the total amount of orders
 			for (Integer i: remIngrs) {
 				ord_count += ingrVotes[i][0];
 				ord_count += ingrVotes[i][1];
 			}
 
-			// compute the preferences
+			// variable that keeps count of total order amount (used in roulette wheel selection)
+			double totalPreference = 0;
+
+			// compute the total preference of the remaining choices
 			for (Integer i: remIngrs) {
-				double removeVisibility = (((double) ingrVotes[i][0]) / (double) ord_count);
-				double addVisibility = (((double) ingrVotes[i][1]) / (double) ord_count);
-				totalPreference += ants.getPreference(i, 0, removeVisibility);
-				totalPreference += ants.getPreference(i, 1, addVisibility);
+				double addVisibility = (((double) ingrVotes[i][0]));	
+				double removeVisibility = (((double) ingrVotes[i][1]));	
+				totalPreference += ants.getPreference(i, 0, addVisibility);
+				totalPreference += ants.getPreference(i, 1, removeVisibility);
 			}
+
+			// compare totalPref to ordCount
+			//System.out.println("totalPref: " + totalPreference + ", ord_count: " + ord_count);
 
 			if (!(ord_count > 0)) break; // stop if the remaining customers don't care about the remaining ingredients	
 
@@ -192,12 +201,14 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
 			// probability mass that is left
 			double mass = 1;
 			for (Integer i: remIngrs) {
-				double removeVisibility = (((double) ingrVotes[i][0]) / (double) ord_count);
-				double removePreference = ants.getPreference(i, 0, removeVisibility);
-				double addVisibility = (((double) ingrVotes[i][1]) / (double) ord_count);
-				double addPreference = ants.getPreference(i, 1, addVisibility);
+				ingr = i;
+				double addVisibility = (((double) ingrVotes[i][0])); 		
+				double addPreference = ants.getPreference(i, 0, addVisibility);
+				double removeVisibility = (((double) ingrVotes[i][1]));		
+				double removePreference = ants.getPreference(i, 1, removeVisibility);
 				// probability of choosing to add i as a ratio of preferences
 				double prob1 = addPreference / totalPreference;
+				// System.out.println("Probability of adding " + i + " equals: " + prob1 / mass);
 				if (Math.random() < (prob1 / mass)) {
 					ingr = i;
 					val = true;
@@ -207,14 +218,18 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
 				mass = mass - prob1;
 				// probability of choosing to remove i as a ratio of preferences
 				double prob2 = removePreference / totalPreference;
+				// System.out.println("Probability of removing " + i + " equals: " + prob2 / mass);
 				if (Math.random() < (prob2 / mass)) {
 					ingr = i;
-					val = true;
+					val = false;
 					break;
 				}
 				// update the mass after flipping the biased coin
 				mass = mass - prob2;
 			}
+			
+			// Print the choice that was made
+			// System.out.println("Choose " + val + " for ingredient " + ingr);
 
     		onPizza[ingr] = val; // set value according to greedy choice
     		remIngrs.remove(ingr); // remove ingredient from set	
@@ -244,9 +259,10 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
 	
 	// mutate current solution
 	public void mutate() {
-		
-		// TODO
-		
+		// add/remove a random ingredient
+		Random random = new Random();
+		int randIngr = random.nextInt(M);
+		onPizza[randIngr] = !onPizza[randIngr];
 	}
     
     
@@ -331,10 +347,10 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
 	// visualize solution as ipe file
 	public void visualize(String filename, boolean reorder) {
 		
-		if (N > 1000) {
-			System.out.println("Solution too large too visualize!");
-			return;
-		}
+		// if (N > 1000) {
+		// 	System.out.println("Solution too large too visualize!");
+		// 	return;
+		// }
 		
 		int sqSize = (int)Math.ceil(1900.0 / (N + 3.0));
 		if (sqSize > 32) sqSize = 32;
