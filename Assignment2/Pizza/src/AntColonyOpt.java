@@ -24,8 +24,12 @@ public class AntColonyOpt {
 	
 	// initalize a round (iteration) of the ant colony optimization algorithm
 	public void initRound() {
-		// TODO
-
+		// update the pheromone levels
+		for (int i=0; i<M; i++) {
+			for (int j=0; j<2; j++) {
+				deltaPher[i][j] = 0;
+			}
+		}
 	}
 	
 	

@@ -26,22 +26,43 @@ final class AntRank implements Comparable<AntRank> {
 	}
 }
 
+final class solutionRank implements Comparable<solutionRank> {
+	double cost;
+	PizzaSolution sol;
+
+	solutionRank(double cost, PizzaSolution sol) {
+		this.cost = cost;
+		this.sol = sol;
+	}
+
+	@Override
+	public int compareTo(solutionRank sol) {
+		if (this.cost < sol.cost) {
+			return -1;
+		} else if (this.cost == sol.cost) {
+			return 0;
+		} else {
+			return 1;
+		}
+	}
+}
+
 public class Pizza {
 
 	static Random random = new Random();
-	static final String dir = System.getProperty("user.dir") + "/";
-	static final String dataset = "medium"; // choose the dataset
+	static final String dir = System.getProperty("user.dir") + "/Pizza/";
+	static final String dataset = "difficult"; // choose the dataset
 
 	public static void main(String[] args) {
 		//System.out.println("Directory: " + dir);
 		PizzaInstance inst = new PizzaInstance(dir + "data/" + dataset + ".txt"); // load the problem instance
-		//PizzaSolution sol = new PizzaSolution(inst, true); // initialize a (random) solution
-		//sol.computeGreedy(); // run the original greedy algorithm
-		//AntColonyOpt ants = new AntColonyOpt(inst.M, 2, 6, (double) 1/inst.M, 0.5, 1); // make object for Ant Colony Optimization
+		PizzaSolution sol = new PizzaSolution(inst, true); // initialize a (random) solution
+		sol.computeGreedy(); // run the original greedy algorithm
+		//AntColonyOpt ants = new AntColonyOpt(inst.M, 2, 6, ((double) 1/inst.M), 0.5, 1); // make object for Ant Colony Optimization
 		//sol.computeGreedy(ants); // run the ant colony greedy algorithm
-		//PizzaSolution sol = antColony(inst, 15, 50, ants); // perform ant colony optimization
-		//PizzaSolution sol = antColonyRank(inst, 15, 40, ants); // perform ant colony optimization with rank-based pheromone depositing
-		PizzaSolution sol = geneticAlg(inst, 30, 50, 1000); // perform the genetic algorithm
+		//PizzaSolution sol = antColony(inst, 25, 50, ants); // perform ant colony optimization
+		//PizzaSolution sol = antColonyRank(inst, 25, 50, ants); // perform ant colony optimization with rank-based pheromone depositing
+		//PizzaSolution sol = geneticAlg(inst, 200, 300, 50); // perform the genetic algorithm
 		System.out.println("Cost = " + sol.getCost()); // output the cost
 		sol.output(dir + "output/" + dataset + ".out"); // output the solution
 		sol.visualize(dir + "figures/" + dataset + ".png", true); // visualize the solution
@@ -65,7 +86,6 @@ public class Pizza {
 				ants[a] = new PizzaSolution(inst, true);
 			}
 
-			// TODO: What is this for?
 			antOpt.initRound();
 
 			// Let the ants find solutions
@@ -77,7 +97,6 @@ public class Pizza {
 			// Add the pheromone from the ants
 			for (int s=0; s<nAnts; s++) {
 				// Check if the solution is better than the current best
-				// TODO: Should we do something here for equality?
 				if (ants[s].getCost() > bestCost) {
 					// Change best solution
 					bestCost = ants[s].getCost();
@@ -92,7 +111,7 @@ public class Pizza {
 				}
 			}
 
-			// // Print the pheromone levels
+			// Print the pheromone levels
 			// if (iter % 10 == 0) {
 			// 	System.out.println("Pher array");
 			// 	System.out.println(Arrays.deepToString(antOpt.pher));
@@ -116,8 +135,6 @@ public class Pizza {
 	public static PizzaSolution antColonyRank(PizzaInstance inst, int nAnts, int nIter, AntColonyOpt antOpt) {	
 		PizzaSolution bestSol = new PizzaSolution(inst, true);
 		double bestCost = 1;
-		
-		// TODO
 
 		// Create nAnts solutions (ant) using computeGreedy(ants) where ants is the context.
 		// After creating the solutions update the context (ants).
@@ -132,7 +149,6 @@ public class Pizza {
 				ants[s] = new PizzaSolution(inst, true);
 			}
 
-			// TODO: What is this for?
 			antOpt.initRound();
 
 			// Let the ants find solutions
@@ -159,7 +175,6 @@ public class Pizza {
 				// Iterate over the solutions in ascending order
 				PizzaSolution ant = ants[ranking[s].index];
 				// Check if the solution is better than the current best
-				// TODO: Should we do something here for equality?
 				if (ant.getCost() > bestCost) {
 					// Change best solution
 					bestCost = ant.getCost();
@@ -199,112 +214,108 @@ public class Pizza {
 	// The number of iterations/generations must be [nIter]
 	// You may choose the type of selection yourself
 	public static PizzaSolution geneticAlg(PizzaInstance inst, int select, int offSpring, int nIter) {
-		
 		PizzaSolution bestSol = new PizzaSolution(inst, true);
 		double bestCost = bestSol.getCost();
-		int eliteAmount = Math.round((float) select / (float) 10);
-		double crossoverProb = 0.5;
+		int eliteAmount = Math.round((float) select / (float) 2);
 
-		// TODO
-		// Create current generation array
-		PizzaSolution[] currentGen = new PizzaSolution[select];
-		// Create elite array
-		PizzaSolution[] eliteGen = new PizzaSolution[eliteAmount];
-		// Create arrays for the selection before and after crossover/mutation
-		PizzaSolution[] selectGenOld = new PizzaSolution[select];
-		PizzaSolution[] selectGenNew = new PizzaSolution[offSpring];
+		ArrayList<solutionRank> currentGen = new ArrayList<>();
+		ArrayList<solutionRank> nextGen = new ArrayList<>();
+		ArrayList<solutionRank> selection = new ArrayList<>();
+
 		// Initialize current generation
 		for (int s=0; s<select; s++) {
-			currentGen[s] = new PizzaSolution(inst, true);
+			PizzaSolution sol = new PizzaSolution(inst, true);
+			sol.computeGreedy();
+			currentGen.add(new solutionRank(sol.getCost(), sol));
 		}
 
 		// Genetic algorithm loop
 		for (int iter=0; iter < nIter; iter++) {
-			// Sort the solutions in the current generation
-			// 		Create ranking objects for the currentGen
-			AntRank[] ranking = new AntRank[currentGen.length];
-
-			// 		Populate the ranking array
-			for (int s=0; s<currentGen.length; s++) {
-				double cost = currentGen[s].getCost();
-				// Check the cost and update best solution
-				if (cost > bestCost) {
-					bestCost = cost;
-					bestSol = currentGen[s].copy();
-					System.out.println("Best solution improved to: " + bestCost);
-				}
-				int index = s;
-				ranking[s] = new AntRank(cost, index);
+			// Print progress
+			if (iter % 10 == 0) {
+				System.out.println("Progress: " + (double) iter/nIter);
 			}
 
-			// 		Sort the ranking
-			Arrays.sort(ranking);
+			// Sort the solutions in the current generation
+			Collections.sort(currentGen);
 
 			// Store x best solutions (elitism)
 			for (int s=0; s<eliteAmount; s++) {
-				eliteGen[s] = currentGen[ranking[currentGen.length - s - 1].index];
+				nextGen.add(currentGen.get(select - s - 1));
 			}
 
-			// Store select selected solitions (selection)
+			// Store selected solutions (selection)
 			for (int s=0; s<select; s++) {
-				selectGenOld[s] = currentGen[ranking[currentGen.length - s - 1].index];
+				selection.add(currentGen.get(select - s - 1));
 			}
 
-			// Randomly apply crossover to selected solutions and store in selectGenNew
-			for (int s=0; s<selectGenOld.length; s++) {
-				if (Math.random() < crossoverProb) {
-					// Find a random solution other than s itself
-					int randomIndex = random.nextInt(selectGenOld.length);
-					if (randomIndex == s) {
-						if (s + 1 < selectGenOld.length - 1) {
-							randomIndex += 1;
-						} else {
-							randomIndex -= 1;
-						}
+			// Randomly apply crossover to selected solutions
+			for (int s=0; s<offSpring; s++) {
+				int index1 = random.nextInt(select - 1);
+				int index2 = random.nextInt(select - 1);
+				if (index1 == index2) {
+					if (index1 < select - 2) {
+						index1++;
+					} else {
+						index1 --;
 					}
-					// Apply crossover
-					selectGenNew[s] = PizzaSolution.crossover(selectGenOld[s], selectGenOld[randomIndex]);
-				} else {
-					// Leave the solution as is
-					selectGenNew[s] = selectGenOld[s];
+				}
+				PizzaSolution sol = PizzaSolution.crossover(selection.get(index1).sol, selection.get(index2).sol);
+				double solCost = sol.getCost();
+				// Check if crossover is better or equal and if so replace, or replace by greedy with p=0.2
+				if (solCost >= selection.get(index1).cost) {
+					selection.get(index1).cost = solCost;
+					selection.get(index1).sol = sol.copy();
+					if (selection.get(index1).cost > bestCost) {
+						bestSol = selection.get(index1).sol.copy();
+						bestCost = selection.get(index1).sol.getCost();
+					}
+				} else if (Math.random() < 0.1) {
+					selection.get(index1).sol.computeGreedy();
+					bestSol = selection.get(index1).sol.copy();
+					bestCost = selection.get(index1).sol.getCost();
+				}
+				// Check if crossover is better or equal and if so replace, or replace by greedy with p=0.2
+				if (solCost >= selection.get(index1).cost) {
+					selection.get(index2).cost = solCost;
+					selection.get(index2).sol = sol.copy();
+					if (selection.get(index2).cost > bestCost) {
+						bestSol = selection.get(index2).sol.copy();
+						bestCost = selection.get(index2).sol.getCost();
+					}
+				} else if (Math.random() < 0.1) {
+					selection.get(index2).sol.computeGreedy();
+					bestSol = selection.get(index2).sol.copy();
+					bestCost = selection.get(index2).sol.getCost();
 				}
 			}
 
-			// Randomly apply mutations to selectGenNew
-			for (int s=0; s<(offSpring - select); s++) {
-				// Get a random index
-				int index = random.nextInt(selectGenOld.length);
-				// Copy the solution
-				PizzaSolution sol = selectGenOld[index];
-				// Apply mutation
-				sol.mutate();
-				// Add the mutated solution to selectGenNew
-				selectGenNew[selectGenOld.length + s] = sol;
+			// Apply mutation to all selected solutions
+			for (int s=0; s<select; s++) {
+				selection.get(s).sol.mutate();
+				selection.get(s).cost = selection.get(s).sol.getCost();
+				if (selection.get(s).cost > bestCost) {
+					bestSol = selection.get(s).sol.copy();
+					bestCost = selection.get(s).sol.getCost();
+				}
 			}
 
-			// Sort the best (select - x) solutions and combine with the eliteGen into a new currentGen
-			// 		Create ranking objects for the nextGen
-			ranking = new AntRank[selectGenNew.length];
+			// Sort the selected solutions
+			Collections.sort(selection);
 
-			// 		Populate the ranking array
-			for (int s=0; s<selectGenNew.length; s++) {
-				double cost = selectGenNew[s].getCost();
-				int index = s;
-				ranking[s] = new AntRank(cost, index);
+			// Put the best (adapated) selected solutions in nextGen
+			for (int s=0; s<(select-eliteAmount); s++) {
+				nextGen.add(selection.get(select - s - 1));
 			}
 
-			// 		Sort the ranking
-			Arrays.sort(ranking);
-
-			// Put back the x best solutions (elitism)
-			for (int s=0; s<eliteAmount; s++) {
-				currentGen[s] = eliteGen[s];
+			// Replace current gen by next gen
+			for (int i=0; i<select; i++) {
+				currentGen.get(i).cost = nextGen.get(i).cost;
+				currentGen.get(i).sol = nextGen.get(i).sol;
 			}
 
-			// Add (currentGen.length - x) best solutions from nextGen to currentGen
-			for (int s=eliteAmount; s<currentGen.length; s++) {
-				currentGen[s] = selectGenNew[ranking[selectGenNew.length - (s-eliteAmount) - 1].index];
-			}
+			// Clear the next gen
+			nextGen.clear();
 		}
 		
 		return bestSol;

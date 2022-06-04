@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.TreeSet;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
@@ -18,13 +19,22 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
 	public static PizzaSolution crossover(PizzaSolution sol1, PizzaSolution sol2) {
 		PizzaSolution sol = new PizzaSolution(sol1.instance, false);
 		
-		// Method 1: Swap random amount of ingredients
+		// Choose point from which ingredients are swapped
 		Random random = new Random();
 		int ingrAmount = random.nextInt(sol1.M);
-		// Randomly copy ingredient choices from sol2 to sol1
-		for (int i=0; i<ingrAmount; i++) {
-			int ingrIndex = random.nextInt(sol1.instance.M);
-			sol1.onPizza[ingrIndex] = sol2.onPizza[ingrIndex];
+		// Randomly choose wether first half or second half is swapped
+		if (Math.random() < 0.5) {
+			for (int i=0; i<ingrAmount; i++) {
+				boolean temp = sol1.onPizza[i];
+				sol1.onPizza[i] = sol2.onPizza[i];
+				sol2.onPizza[i] = temp;
+			}
+		} else {
+			for (int i=ingrAmount; i<sol1.M; i++) {
+				boolean temp = sol1.onPizza[i];
+				sol1.onPizza[i] = sol2.onPizza[i];
+				sol2.onPizza[i] = temp;
+			}
 		}
 
 		sol.recomputeConflicts(); //Fix the nConflicts array, if necessary
@@ -35,6 +45,7 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
 	
 	PizzaInstance instance; // instance
 	boolean[] onPizza; // solution representation (bit vector for which ingredients are on the pizza)
+	int[] importance; // vector containing for every ingredient how many orders depend on it
 	int N; // a shorthand for the number of preferences
 	int M; // a shorthand for the number of ingredients
 	double cost; // cost of most recent call to getCost
@@ -259,10 +270,28 @@ public class PizzaSolution implements Comparable<PizzaSolution> {
 	
 	// mutate current solution
 	public void mutate() {
-		// add/remove a random ingredient
-		Random random = new Random();
-		int randIngr = random.nextInt(M);
-		onPizza[randIngr] = !onPizza[randIngr];
+		// get max nr of conflicts
+		double sum = 0;
+		for (int i=0; i<nConflicts.length; i++) {
+			sum += nConflicts[i];
+		}
+
+		// do roulette wheel selection on nrOfConflicts per ingredient
+		int ingr = 0;
+		double mass = 1;
+		for (int i = 0; i < M; i++) {
+			ingr = i;
+			// probability of choosing to swap i 
+			double prob = nConflicts[i] / sum;
+			if (Math.random() < (prob / mass)) {
+				break;
+			}
+			// update the mass after flipping the biased coin
+			mass = mass - prob;
+		}
+
+		// flip the ingredient chosen by the roullette wheel selection
+		onPizza[ingr] = !onPizza[ingr];
 	}
     
     
