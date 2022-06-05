@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Particle {
 
@@ -55,9 +56,48 @@ public class Particle {
 	
 	// perform one iteration for this particle and update its personal best solution
 	public void update() {
-		
-		// TODO
-		
+		// compute random numbers
+//		Random rand = new Random();
+//		int r1 = rand.nextInt(2);
+//		int r2 = rand.nextInt(2);
+
+
+		// for each point
+		for (int i = 0; i < sol.K; i++) {
+			// compute random numbers
+			Random rand = new Random();
+			int r1 = rand.nextInt(2);
+			int r2 = rand.nextInt(2);
+
+			Pos v = velocity.get(i);
+			Pos p = sol.getPoint(i);
+
+			// update velocity
+			//System.out.println("Position: " + p.x);
+			//System.out.println("Velocity: " + v.x);
+			v.x = (pso.cIn * v.x) + (pso.cCog * r1 * (p.x - best.get(i).x)) + (pso.cSoc * r2 * (p.x - pso.globalBest.tree.get(i).x));
+			v.y = (pso.cIn * v.y) + (pso.cCog * r1 * (p.y - best.get(i).y)) + (pso.cSoc * r2 * (p.y - pso.globalBest.tree.get(i).y));
+			velocity.set(i, new Pos(v.x, v.y));
+
+			// update position based on new velocity
+			p.x = p.x + v.x;
+			p.y = p.y + v.y;
+
+			sol.setPoint(i, new Pos(p.x, p.y));
+			// make sure it doesn't go out of bounds
+			clipPoint(i);
+		}
+
+		// update particle best
+		if (sol.getCost() < bestCost) {
+			//System.out.println("found better in particle");
+			best.clear();
+			for (int i = 0; i < sol.K; i++) {
+				Pos p = sol.getPoint(i);
+				best.add(new Pos(p.x, p.y));
+				bestCost = sol.getCost();
+			}
+		}
 	}
 	
 	

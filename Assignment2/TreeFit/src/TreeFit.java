@@ -5,8 +5,8 @@ public class TreeFit {
 	public static void main(String[] args) {
 		String dataset = "3split"; // choose the dataset
 		TFInstance inst = new TFInstance("data/" + dataset + ".txt"); // load the problem instance
-		TFSolution sol = new TFSolution(inst, true); // initialize a (random) solution
-		//TFSolution sol = particleSwarm(inst, ..., ..., ..., ..., ...); // perform particle swarm optimization
+		//TFSolution sol = new TFSolution(inst, true); // initialize a (random) solution
+		TFSolution sol = particleSwarm(inst, 50, 50000, 1.5, 1.5, 0.8); // perform particle swarm optimization
 		//TFSolution sol = evolStrategy(inst, ..., ..., ..., ..., ...); // perform evolutionary strategy
 		//TFSolution sol = evolStrategyHybrid(inst, ..., ..., ..., ..., ...); // perform hybrid evolutionary strategy
 		System.out.println("Cost = " + sol.getCost()); // output the cost
@@ -19,7 +19,6 @@ public class TreeFit {
 	// Particle Swarm optimization algorithm (does not require changes, but changing is allowed)
 	// See the class ParticleSwarmOpt for the parameters
 	public static TFSolution particleSwarm(TFInstance inst, int nParticles, int nIter, double cCog, double cSoc, double cIn) {
-		
 		ParticleSwarmOpt pso = new ParticleSwarmOpt(cCog, cSoc, cIn);
 		for (int i = 0; i < nParticles; i++) {
 			TFSolution sol = new TFSolution(inst, true);
@@ -30,7 +29,7 @@ public class TreeFit {
 		for (int t = 0; t < nIter; t++) {
 			pso.updatePSO();
 		}
-		
+
 		return pso.getBestSolution();
 	}
 	

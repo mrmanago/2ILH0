@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE ipe SYSTEM "ipe.dtd">
+<ipe version="70218" creator="Ipe 7.2.21">
+<info created="D:20210227165909" modified="D:20210227165909"/>
+<ipestyle name="custom">
+<symbol name="mark/disk(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+</path>
+</symbol>
+</ipestyle>
+<page>
+<use name="mark/disk(sx)" pos="200.2966308280516 248.88907136075545 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="175.40673834389673 207.4075594672962 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="233.4815118934592 181.33360704113315 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="252.44453568037764 226.37058325421472 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="227.5562854430217 285.62941674578536 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="186.07477354956245 331.8520951476739 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="266.6663929588668 385.185702188807 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="216.88825023735598 410.073952426163 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="221.62941674578533 464.5932616561033 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="251.2588334915706 427.8529162710733 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="227.5562854430217 359.1117497626441 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="176.59244053270376 432.5924405327039 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="136.2966308280516 207.4075594672962 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="99.55628544302171 142.22185727848918 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="163.5562854430217 142.22185727848918 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="146.96302378691848 92.44371455697835 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="118.51766698314127 42.665571835467425 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="110.22267840188856 106.66557183546742 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="41.48151189345921 90.07395242616306 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="16.59161940930432 50.962202663519086 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="68.7411665084293 50.962202663519086 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="0.0 22.518488106540833 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="45.03697621308148 0.0 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="242.9638449103179 144.59161940930437 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="273.77732159811137 170.6672140822663 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="347.25965461497003 184.88907136075545 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="314.07477354956245 132.74116650842936 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="349.62941674578525 97.1848810654077 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="383.99999999999994 123.25883349157066 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="411.25965461497003 86.51848810654083 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="356.74198763182875 54.51766698314131 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="417.1865233122064 8.294988581252799 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="450.37140437761406 50.962202663519086 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="446.81594005799184 112.5924405327038 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="490.6672140822663 45.03697621308157 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="471.70419029534776 14.221857278489173 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="395.8520951476738 158.8151189345924 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="299.85291627107324 208.59161940930437 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="261.92686869723633 333.037797336481 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="259.5554643196223 267.8520951476739 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="267.8520951476738 497.7781427215109 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="206.22185727848913 512.0 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="155.25965461497003 175.40673834389676 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="410.07395242616303 47.40673834389677 " size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="0.0 22.518488106540833 " size="normal" stroke="1 0 0"/>
+<use name="mark/disk(sx)" pos="411.25965461497003 86.51848810654083 " size="normal" stroke="1 0 0"/>
+<use name="mark/disk(sx)" pos="261.92686869723633 333.037797336481 " size="normal" stroke="1 0 0"/>
+<use name="mark/disk(sx)" pos="267.8520951476738 497.7781427215109 " size="normal" stroke="1 0 0"/>
+<path stroke="1 0 0">
+261.92686869723633 333.037797336481 m
+0.0 22.518488106540833 l
+</path>
+<path stroke="1 0 0">
+267.8520951476738 497.7781427215109 m
+261.92686869723633 333.037797336481 l
+</path>
+<path stroke="1 0 0">
+411.25965461497003 86.51848810654083 m
+261.92686869723633 333.037797336481 l
+</path>
+</page>
+</ipe>
